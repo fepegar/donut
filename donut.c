@@ -1,44 +1,55 @@
-double sin(), cos();
+#define TWO_PI 6.28
+#define BUFFER_SIZE 1760
+#define DELTA_X 0.005
+#define DELTA_Z 0.002
+#define NEWLINE 10
+#define CLEAR_SCREEN "\x1b[2J"
+#define RETURN_CURSOR "\x1b[H"
+#define DELTA_CIRCLE 0.02
+#define DELTA_TORUS 0.07
+
+
 int main(void){
   int k;
-  float A = 0;
-  float B = 0;
-  float i;
-  float j;
-  float z[1760];
-  char b[1760];
-  printf("\x1b[2J");
+  float rotationX = 0;
+  float rotationZ = 0;
+  float angleCircle, angleTorus;
+  float zBuffer[BUFFER_SIZE];
+  char frameBuffer[BUFFER_SIZE];
+
+  printf(CLEAR_SCREEN);
+
   while(1){
-    memset(b, 32, 1760);
-    memset(z, 0, 7040);
-    for(j = 0; 6.28 > j; j += 0.07){
-      for(i = 0; 6.28 > i; i += 0.02){
-        float c = sin(i);
-        float d = cos(j);
-        float e = sin(A);
-        float f = sin(j);
-        float g = cos(A);
+    memset(frameBuffer, 32, BUFFER_SIZE);
+    memset(zBuffer, 0, 7040);
+    for(angleTorus = 0; angleTorus < TWO_PI; angleTorus += DELTA_TORUS){
+      for(angleCircle = 0; angleCircle < TWO_PI; angleCircle += DELTA_CIRCLE){
+        float c = sin(angleCircle);
+        float d = cos(angleTorus);
+        float e = sin(rotationX);
+        float f = sin(angleTorus);
+        float g = cos(rotationX);
         float h = d + 2;
         float D = 1 / (c * h * e + f * g + 5);
-        float l = cos(i);
-        float m = cos(B);
-        float n = sin(B);
+        float l = cos(angleCircle);
+        float m = cos(rotationZ);
+        float n = sin(rotationZ);
         float t = c * h * g - f * e;
         int x = 40 + 30 * D * (l * h * m - t * n);
         int y = 12 + 15 * D * (l * h * n + t * m);
         int o = x + 80 * y;
         int N = 8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n);
-        if(22 > y && y > 0 && x > 0 && 80 > x && D > z[o]){
-          z[o] = D;
-          b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
+        if(22 > y && y > 0 && x > 0 && 80 > x && D > zBuffer[o]){
+          zBuffer[o] = D;
+          frameBuffer[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
         }
       }
     }
-    printf("\x1b[H");
-    for(k = 0; 1761 > k; k++) {
-      putchar(k % 80 ? b[k] : 10);
+    printf(RETURN_CURSOR);
+    for(k = 0; k < (BUFFER_SIZE + 1); k++) {
+      putchar(k % 80 ? frameBuffer[k] : NEWLINE);
     }
-    A += 0.01; //0.04;
-    B += 0.005; //0.02;
+    rotationX += DELTA_X;
+    rotationZ += DELTA_Z;
   }
 }
