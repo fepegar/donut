@@ -1,3 +1,7 @@
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
 #define TWO_PI 6.28
 #define BUFFER_SIZE 1760
 #define DELTA_X 0.005
